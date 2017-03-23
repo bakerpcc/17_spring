@@ -1,0 +1,9 @@
+create table liebao.article(
+article_contentid varchar(20),
+article_lan varchar(5),
+article_publihser varchar(30),
+article_title text,
+article_update_time long,
+article_l1_categories text,
+article_l2_categories text
+)
