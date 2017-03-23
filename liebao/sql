@@ -7,3 +7,25 @@ article_update_time long,
 article_l1_categories text,
 article_l2_categories text
 )
+
+create table liebao.user(
+user_id varchar(35),
+user_age int,
+user_gender int,
+user_gender_weight float,
+user_model varchar(20),
+user_brand varchar(10),
+user_country varchar(10),
+user_maxmind_country_iso_code varchar(10),
+user_maxmind_state_iso_code varchar(10),
+user_maxmind_city varchar(20),
+user_all_pkgs text,
+user_gp_frequency text
+)
+
+create table liebao.user_article(
+user_id varchar(35),
+article_contentid varchar(20),
+dt date,
+dwelltime int
+)
