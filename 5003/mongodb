@@ -1,0 +1,11 @@
+mongoexport -d msbd5003 -c businessLight -f "business_id,stars,name,review count,categories,city" --out yelp/trainingBusiness.
+
+mongoexport -d msbd5003 -c businessTest -f "business_id,stars,name,review count,categories,city" --out yelp/testBusiness.json
+
+mongoexport -d msbd5003 -c userLight -f "user_id,review_count,average_stars,votes" --out yelp/trainingUser
+
+mongoexport -d msbd5003 -c userTest -f "user_id,review_count,average_stars,votes" --out yelp/testUser
+
+mongoexport -d msbd5003 -c reviewLight -f "user_id,business_id,stars" --out yelp/trainingReview
+
+mongoexport -d msbd5003 -c reviewTest -f "user_id,business_id,stars" --out yelp/testReview
