@@ -67,3 +67,5 @@ GGTF7hnQi6D5W77_qiKlqg,pagerank=90.81101504216208
 NfU0zDaTMEQ4-X9dbQWd9A,pagerank=89.74133466829397
 qVc8ODYU5SZjKXVBgXdI7w,pagerank=87.4021831810235
 """
+
+temp.write.format("com.databricks.spark.csv").option("header", "true").save("file.csv")
