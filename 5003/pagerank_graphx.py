@@ -41,6 +41,7 @@ v.count()
 e=spark.read.csv('/Users/pc/PycharmProjects/5003/output/yelpNetwork_e.csv',header=True,inferSchema=True)
 e.count() 
 g=GraphFrame(v,e)
+sc.setCheckpointDir('User/pc/checkpoint')
 result = g.connectedComponents()
 
 r=result.select("id", "component")
@@ -53,6 +54,7 @@ subset_id=subset.select('id')
 subset_edge=e.join(subset_id,e['dst']==subset['id'],'leftsemi').join(subset_id,e['src']==subset['id'],'leftsemi')
 
 g_cc=GraphFrame(subset_id,subset_edge)
+# results_cc = g_cc.pageRank(resetProbability=0.15, maxIter=3)
 results_cc = g_cc.pageRank(resetProbability=0.01, maxIter=10)
 results_cc.vertices.select("id", "pagerank").orderBy("pagerank",ascending=False).show()
 
@@ -69,3 +71,25 @@ qVc8ODYU5SZjKXVBgXdI7w,pagerank=87.4021831810235
 """
 
 temp.write.format("com.databricks.spark.csv").option("header", "true").save("file.csv")
+
+# 2-hop friend
+# g_cc.find("(a)-[]->(b);(b)-[]->(c)").filter("a.id = 'PhUqhfyk3jdaS0Xb619RJQ'").count()
+# result:504781 with redundancy
+
+top1=g_cc.find("(a)-[]->(b);(b)-[]->(c)").filter("a.id = 'PhUqhfyk3jdaS0Xb619RJQ'").select("c.id").distinct().count()
+# result:504781 with redundancy
+# result:87051
+top2=g_cc.find("(a)-[]->(b);(b)-[]->(c)").filter("a.id = 'O_GWZZfQx7qv-n-CN7hsIA'").select("c.id").distinct().count()
+# result:333003 with redundancy
+# result:77509
+top3=g_cc.find("(a)-[]->(b);(b)-[]->(c)").filter("a.id = 'GGTF7hnQi6D5W77_qiKlqg'").select("c.id").distinct().count()
+# result:130071 with redundancy
+# result:39505
+
+# randomly pick a vertices and compare it's 2-hop friend degree wuth high pagerank vertices
+random=g_cc.find("(a)-[]->(b);(b)-[]->(c)").filter("a.id = 'tDfedUfC7n33WBQtkPD5aw'").select("c.id").distinct().count()
+# result:401 with redundancy
+# result:332 
+
+total=g.vertices.count()
+# result:1029432
