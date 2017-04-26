@@ -10,4 +10,5 @@ g=GraphFrame(v,e)
 # g.inDegrees.show()
 # g.outDegrees.show()
 
+results = g.pageRank(resetProbability=0.01, maxIter=20)
 results.vertices.select("id", "pagerank").orderBy("pagerank",ascending=False).show()
