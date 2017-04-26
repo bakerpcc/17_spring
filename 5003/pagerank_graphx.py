@@ -55,3 +55,15 @@ subset_edge=e.join(subset_id,e['dst']==subset['id'],'leftsemi').join(subset_id,e
 g_cc=GraphFrame(subset_id,subset_edge)
 results_cc = g_cc.pageRank(resetProbability=0.01, maxIter=10)
 results_cc.vertices.select("id", "pagerank").orderBy("pagerank",ascending=False).show()
+
+temp=results_cc.vertices.select("id", "pagerank").orderBy("pagerank",ascending=False)
+temp.take(5)
+
+"""
+results:
+PhUqhfyk3jdaS0Xb619RJQ,pagerank=108.7074915473339
+O_GWZZfQx7qv-n-CN7hsIA,pagerank=96.00746145078757
+GGTF7hnQi6D5W77_qiKlqg,pagerank=90.81101504216208
+NfU0zDaTMEQ4-X9dbQWd9A,pagerank=89.74133466829397
+qVc8ODYU5SZjKXVBgXdI7w,pagerank=87.4021831810235
+"""
