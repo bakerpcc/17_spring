@@ -144,5 +144,9 @@ random=g_cc.find("(a)-[]->(b);(b)-[]->(c)").filter("a.id = 'tDfedUfC7n33WBQtkPD5
 # result:401 with redundancy
 # result:332 
 
+# 4,5
+# NfU0zDaTMEQ4-X9dbQWd9A 96554
+# qVc8ODYU5SZjKXVBgXdI7w 62416
+
 total=g.vertices.count()
 # result:1029432
