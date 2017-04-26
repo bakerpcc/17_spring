@@ -47,6 +47,33 @@ result = g.connectedComponents()
 r=result.select("id", "component")
 r.groupBy('component').count().orderBy('count',ascending=False).show()
 
+"""
++---------+------+                                                              
+|component| count|
++---------+------+
+|        0|429208|
+|    95949|     7|
+|    84759|     7|
+|    96933|     7|
+|    49211|     6|
+|    98354|     6|
+|   276395|     5|
+|   107731|     5|
+|   204385|     5|
+|   197665|     5|
+|   137185|     5|
+|   263313|     5|
+|    94674|     5|
+|     8825|     5|
+|    80657|     5|
+|   147090|     5|
+|   171371|     5|
+|    80086|     5|
+|   210002|     5|
+|   226268|     5|
++---------+------+
+only showing top 20 rows
+"""
 #label=r.groupBy('component').count().orderBy('count',ascending=False).head()[0]
 
 subset=result.filter('component=0')
@@ -57,6 +84,32 @@ g_cc=GraphFrame(subset_id,subset_edge)
 # results_cc = g_cc.pageRank(resetProbability=0.15, maxIter=3)
 results_cc = g_cc.pageRank(resetProbability=0.01, maxIter=10)
 results_cc.vertices.select("id", "pagerank").orderBy("pagerank",ascending=False).show()
+"""
++--------------------+------------------+                                       
+|                  id|          pagerank|
++--------------------+------------------+
+|PhUqhfyk3jdaS0Xb6...| 108.7074915473339|
+|O_GWZZfQx7qv-n-CN...| 96.00746145078757|
+|GGTF7hnQi6D5W77_q...| 90.81101504216208|
+|NfU0zDaTMEQ4-X9db...| 89.74133466829397|
+|qVc8ODYU5SZjKXVBg...|  87.4021831810235|
+|8DEyKVyplnOcSKx39...| 85.02814512364793|
+|-xDW3gYiYaoeVASXy...|  84.4364846550652|
+|Wc5L6iuvSNF5WGBlq...| 75.77613487971219|
+|iLjMdZi0Tm7DQxX1C...| 73.56168058066208|
+|WeVkkF5L39888IPPl...| 67.53970492721238|
+|dIIKEfOgo0KqUfGQv...| 65.82670355243518|
+|4wp4XI9AxKNqJima-...| 60.62139086152308|
+|jJDEwznWHQIaT4Z0l...| 59.89461065985523|
+|qewG3X2O4X6JKskxy...| 57.22167924976696|
+|AvC5XQAElcGAAn_Wr...|56.304683175152746|
+|Q9mA60HnY87C1TW5k...| 51.84725590262247|
+|cBFgmOCBdhYa0xoFE...|50.855597970411836|
+|IU86PZPgTDCFwJEuA...| 49.95370284743756|
+|djxnI8Ux8ZYQJhiOQ...|  48.2637695944795|
+|wd3xoNaDLib8dhQ7B...| 45.80447922309248|
++--------------------+------------------+
+"""
 
 temp=results_cc.vertices.select("id", "pagerank").orderBy("pagerank",ascending=False)
 temp.take(5)
