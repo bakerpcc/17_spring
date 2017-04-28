@@ -203,6 +203,13 @@ max:
 +-----------+-------+-------------+------------+
 """
 
+v=spark.read.csv('/Users/pc/ziptest/v.csv',header=True,inferSchema=True)
+e=spark.read.csv('/Users/pc/ziptest/e.csv',header=True,inferSchema=True)
+review=spark.read.csv('/Users/pc/ziptest/review.csv',header=True,inferSchema=True)
+g=GraphFrame(v,e)
+results = g.pageRank(resetProbability=0.01, maxIter=10)
+r=results.vertices.select("id", "pagerank").orderBy("pagerank",ascending=False)
+
 rr=r.join(review,r['id']==review['user_id'])
 rr.groupBy('business_id').max().show()
 business_result=rr.groupBy('business_id').max().select('business_id','max(user_id)')
