@@ -208,12 +208,16 @@ e=spark.read.csv('/Users/pc/ziptest/e.csv',header=True,inferSchema=True)
 review=spark.read.csv('/Users/pc/ziptest/review.csv',header=True,inferSchema=True)
 g=GraphFrame(v,e)
 results = g.pageRank(resetProbability=0.01, maxIter=10)
-r=results.vertices.select("id", "pagerank").orderBy("pagerank",ascending=False)
+# r=results.vertices.select("id", "pagerank").orderBy("pagerank",ascending=False)
+r=results.vertices.select("id", "pagerank").orderBy("pagerank")
 
-rr=r.join(review,r['id']==review['user_id'])
+rr=r.join(review,r['id']==review['user_id']).select("id","pagerank","business_id")
 rr.groupBy('business_id').max().show()
-business_result=rr.groupBy('business_id').max().select('business_id','max(user_id)')
+business_result=rr.groupBy('business_id').max().select("business_id","max(id)")
 business_result.show()
+
+max_pagerank=rr.groupBy('business_id').max().select("max(id)").withColumnRenamed("max(id)", "pr_id")
+random_pick=rr.groupBy('business_id').agg(F.first(rr['id'])).select("first(id, false)").withColumnRenamed("first(id, false)", "random_id")
 
 
 
