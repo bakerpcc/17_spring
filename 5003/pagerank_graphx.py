@@ -221,4 +221,4 @@ a=g.inDegrees
 b=g.outDegrees.withColumnRenamed('id','out_id')
 inOut=a.join(b,a['id']==b['out_id'])
 static=inOut.select('*',(inOut['inDegree']/inOut['outDegree']).alias('ratio')).select('id','ratio')
-bio_ratio=float(static.filter("ratio!=1").count())/float(g.vertices.count())
+bio_ratio=float(static.filter("ratio=1").count())/float(g.vertices.count())
