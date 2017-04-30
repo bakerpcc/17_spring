@@ -226,3 +226,11 @@ b=g.outDegrees.withColumnRenamed('id','out_id')
 inOut=a.join(b,a['id']==b['out_id'])
 static=inOut.select('*',(inOut['inDegree']/inOut['outDegree']).alias('ratio')).select('id','ratio')
 bio_ratio=float(static.filter("ratio=1").count())/float(g.vertices.count())
+
+
+# indegree比较重要，用indegree的表去join(business_id,user_id)然后groupBy(business_id)返回每个business_id里indegree最大
+# (被指向最多，被最多人关注的节点)然后商家向这个人发放优惠券，宣传。
+
+# to do list: 
+# a1=g.inDegrees.orderBy('inDegrees',ascending=False)
+# a1和pagerank的那个表分别join(business_id,user_id)
