@@ -7,3 +7,4 @@ mongoexport -d msbd5003 -c reviewTest -f "user_id,business_id,stars" --out yelp/
 
 规范json格式
 mongoexport -d msbd5003 -c reviewLight -f "review_id,business_id,user_id,stars,text" --pretty --jsonArray --out reviewText.json
+mongoexport -d msbd5003 -c review -f "user_id,business_id" --pretty --jsonArray --out yelp/totalReview.json
