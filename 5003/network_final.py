@@ -45,7 +45,7 @@ review=spark.read.csv('/Users/pc/PycharmProjects/5003/output/yelpNetwork_b_u.csv
 # on new dishes or event
 
 # in order to avoid spark bug on groupBy, we add withColumnRenamed before every groupBy operation
-cnt=review.withColumnRenamed('business_id','business_id').groupBy('business_id').count().filter('count>100')
+cnt=review.withColumnRenamed('business_id','business_id').groupBy('business_id').count().filter('count>200')
 subset=cnt.join(review,'business_id')
 pr_results_business=pr.join(subset,pr['id']==subset['user_id']).select("user_id","pagerank","business_id") /
                     .withColumnRenamed('business_id','business_id').groupBy('business_id').max()
