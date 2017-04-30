@@ -27,9 +27,9 @@ r=result.select("id", "component")
 r.groupBy('component').count().orderBy('count',ascending=False).show()
 
 # step4: choose the largest connected component, create a new subset graph, and run pagerank algorithm on this new graph
-subset=result.filter('component=0')
-subset_id=subset.select('id')
-subset_edge=e.join(subset_id,e['dst']==subset['id'],'leftsemi').join(subset_id,e['src']==subset['id'],'leftsemi')
+subset_0=result.filter('component=0')
+subset_id=subset_0.select('id')
+subset_edge=e.join(subset_id,e['dst']==subset_0['id'],'leftsemi').join(subset_id,e['src']==subset_0['id'],'leftsemi')
 
 g_cc=GraphFrame(subset_id,subset_edge)
 pr = g_cc.pageRank(resetProbability=0.01, maxIter=10)
