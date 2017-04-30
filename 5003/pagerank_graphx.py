@@ -203,15 +203,15 @@ max:
 +-----------+-------+-------------+------------+
 """
 
-v=spark.read.csv('/Users/pc/ziptest/v.csv',header=True,inferSchema=True)
-e=spark.read.csv('/Users/pc/ziptest/e.csv',header=True,inferSchema=True)
-review=spark.read.csv('/Users/pc/ziptest/review.csv',header=True,inferSchema=True)
-g=GraphFrame(v,e)
-results = g.pageRank(resetProbability=0.01, maxIter=10)
+v1=spark.read.csv('/Users/pc/ziptest/v.csv',header=True,inferSchema=True)
+e1=spark.read.csv('/Users/pc/ziptest/e.csv',header=True,inferSchema=True)
+review1=spark.read.csv('/Users/pc/ziptest/review.csv',header=True,inferSchema=True)
+g1=GraphFrame(v1,e1)
+results1 = g1.pageRank(resetProbability=0.01, maxIter=10)
 # r=results.vertices.select("id", "pagerank").orderBy("pagerank",ascending=False)
-r=results.vertices.select("id", "pagerank").orderBy("pagerank")
+r1=results1.vertices.select("id", "pagerank").orderBy("pagerank")
 
-rr=r.join(review,r['id']==review['user_id']).select("id","pagerank","business_id")
+rr=r1.join(review1,r1['id']==review1['user_id']).select("id","pagerank","business_id")
 rr.groupBy('business_id').max().show()
 business_result=rr.groupBy('business_id').max().select("business_id","max(id)")
 business_result.show()
@@ -234,3 +234,56 @@ bio_ratio=float(static.filter("ratio=1").count())/float(g.vertices.count())
 # to do list: 
 # a1=g.inDegrees.orderBy('inDegrees',ascending=False)
 # a1和pagerank的那个表分别join(business_id,user_id)
+
+pr=spark.read.parquet("/Users/pc/spark-2.1.0-bin-hadoop2.7/namesAndAges.parquet")
+review=spark.read.csv('/Users/pc/PycharmProjects/5003/output/yelpNetwork_b_u.csv',header=True,inferSchema=True)
+r=pr.join(review,pr['id']==review['user_id']).select("id","pagerank","business_id")
+business_result=r.groupBy('business_id').max().select("business_id","max(id)")
+# 最后一步有内存泄漏，可能是因为这个原因所以没有办法将max(id)加载出来，只能加载到max(pagerank)
+# 用inDegree做出来也是一样的结果，总是缺一列
+
+review.groupBy('business_id').count().show()
+
+cnt1=review.groupBy('business_id').count()
+cnt1.count()
+# 144072  
+cnt2=review.groupBy('business_id').count().filter('count>20')
+cnt2.count()
+# 38397
+cnt3=review.groupBy('business_id').count().filter('count>100')
+cnt3.count()
+# 7846
+
+# cnt3=review.groupBy('business_id').count().filter('count>100').withColumnRenamed('business_id','id')
+# cnt3=review.groupBy('business_id').count().filter('count>100')
+cnt3=review.withColumnRenamed('business_id','business_id').groupBy('business_id').count().filter('count>100')
+cnt3=review.withColumnRenamed('business_id','business_id').groupBy('business_id').count().filter('count>500')
+subset=cnt3.join(review,cnt3['id']==review['business_id']).select('business_id','user_id')
+# r=pr.join(subset,pr['id']==subset['user_id']).select('business_id','user_id','pagerank')
+
+# spark在groupby上有bug,所以：
+subset=cnt3.join(review,'business_id')
+# cnt3.join(review,'business_id').withColumnRenamed('business_id','business_id').groupBy('business_id').count()
+# 上一行在测试个数，是子set的节点数，7846
+
+ttttt=pr.join(subset,pr['id']==subset['user_id']).select("user_id","pagerank","business_id")
+rrrrr=ttttt.withColumnRenamed('business_id','business_id').groupBy('business_id').max()
+test=rrrrr.join(pr,rrrrr['max(pagerank)']==pr['pagerank'])
+test.count()
+# 177  
+# 合并成一个文件
+from subprocess import call
+test.write.format('com.databricks.spark.csv').save('0430/test')
+os.system("cat 0430/test/p* > 0430/test.csv")
+# 现在得到的这个结果的思路是取的是count>1000，以后可以取小一点比如到200，500之类的。理由是review太小的店家没有为他特地做这个衡量的必要，
+# 而且由于review太少，就算计算了，也会因为user人数太少，发放优惠券并不能起到一个传播的作用。
+# 完整版：
+cnt3=review.withColumnRenamed('business_id','business_id').groupBy('business_id').count().filter('count>200')
+subset=cnt3.join(review,'business_id')
+ttttt=pr.join(subset,pr['id']==subset['user_id']).select("user_id","pagerank","business_id")
+rrrrr=ttttt.withColumnRenamed('business_id','business_id').groupBy('business_id').max()
+# cnt:3131 
+test1=rrrrr.join(pr,rrrrr['max(pagerank)']==pr['pagerank'])
+# cnt:3131
+from subprocess import call
+os.system("cat 0430/test1/p* > 0430/test1.csv")
