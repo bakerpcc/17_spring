@@ -8,12 +8,15 @@ v=spark.read.csv('/Users/pc/PycharmProjects/5003/output/yelpNetwork_i.csv',heade
 # v.count() 
 e=spark.read.csv('/Users/pc/PycharmProjects/5003/output/yelpNetwork_e.csv',header=True,inferSchema=True)
 # e.count() 
+g=GraphFrame(v,e)
 
 # step2: we need to make sure that this graph is a directed graph
 # then we can run pagerank algorithm on it
 a=g.inDegrees
-b=g.outDegrees.withColumnRenamed('id','out_id')
-inOut=a.join(b,a['id']==b['out_id'])
+# b=g.outDegrees.withColumnRenamed('id','out_id')
+b=g.outDegrees
+# inOut=a.join(b,a['id']==b['out_id'])
+inOut=a.join(b,'id')
 static=inOut.select('*',(inOut['inDegree']/inOut['outDegree']).alias('ratio')).select('id','ratio')
 bio_ratio=float(static.filter("ratio=1").count())/float(g.vertices.count())
 
@@ -49,7 +52,7 @@ pr_results_business=pr.join(subset,pr['id']==subset['user_id']).select("user_id"
   
 # step5: write result into csv file. 
 # For default setting, spark will write it into multi-csvfile distributely, we need to merge them into one csv file.
-
+from subprocess import call
 pr_results_business.write.format('com.databricks.spark.csv').save('5003/result')
 os.system("cat 5003/result/p* > 5003/result.csv")
 
