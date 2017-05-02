@@ -50,7 +50,7 @@ subset=cnt.join(review,'business_id')
 pr_results_business=pr.join(subset,pr['id']==subset['user_id']).select("user_id","pagerank","business_id") /
                     .withColumnRenamed('business_id','business_id').groupBy('business_id').max()
   
-# step5: write result into csv file. 
+# step6: write result into csv file. 
 # For default setting, spark will write it into multi-csvfile distributely, we need to merge them into one csv file.
 from subprocess import call
 pr_results_business.write.format('com.databricks.spark.csv').save('5003/result')
