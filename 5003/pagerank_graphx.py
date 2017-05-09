@@ -287,3 +287,14 @@ test1=rrrrr.join(pr,rrrrr['max(pagerank)']==pr['pagerank'])
 # cnt:3131
 from subprocess import call
 os.system("cat 0430/test1/p* > 0430/test1.csv")
+
+
+###
+
+for row in pagerank_results.rdd.collect():
+	#print(row['user_id'])
+	id=row['user_id']
+	#con="a.id="+str(id)
+	con="c.id="+str(id)
+	top1=g1.find("(a)-[]->(b);(b)-[]->(c)").filter(con).select("a.id").distinct().count() 
+	print top1
