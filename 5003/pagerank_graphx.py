@@ -298,3 +298,34 @@ for row in pagerank_groupby_results.rdd.collect():
 	con="c.id="+str(id)
 	top1=g1.find("(a)-[]->(b);(b)-[]->(c)").filter(con).select("a.id").distinct().count() 
 	print top1
+	
+	
+	
+###
+
+v=spark.read.csv('/Users/pc/PycharmProjects/5003/output/yelpNetwork_i.csv',header=True,inferSchema=True)
+e=spark.read.csv('/Users/pc/PycharmProjects/5003/output/yelpNetwork_e.csv',header=True,inferSchema=True)
+g=GraphFrame(v,e)
+res=spark.read.csv('/Users/pc/Downloads/rec_results.csv',header=True,inferSchema=True)
+
+cnt=0
+lgt=0
+for row in res.rdd.collect():
+	id=row['user_id']
+	print id
+	con="a.id='"+id+"'"
+	con=str(con)
+	print con
+	top=g.find("(a)-[]->(b);(b)-[]->(c)").filter(con).select("c.id").distinct().count()
+	print top
+	test=v.rdd.takeSample(False,1,seed=cnt)
+	for t in test:
+		random=t['id']
+		con1="a.id='"+random+"'"
+		con1=str(con1)
+		random=g.find("(a)-[]->(b);(b)-[]->(c)").filter(con1).select("c.id").distinct().count()
+		print random
+	if top>random:
+		lgt=lgt+1
+	cnt=cnt+1
+	
