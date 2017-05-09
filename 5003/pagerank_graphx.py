@@ -291,7 +291,7 @@ os.system("cat 0430/test1/p* > 0430/test1.csv")
 
 ###
 
-for row in pagerank_results.rdd.collect():
+for row in pagerank_groupby_results.rdd.collect():
 	#print(row['user_id'])
 	id=row['user_id']
 	#con="a.id="+str(id)
